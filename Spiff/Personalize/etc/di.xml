@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+ 
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Spiff\Personalize\Api\CartCustomItemRepositoryInterface" type="Spiff\Personalize\Model\Quote\Item\CartCustomerItemRepository" />
+    <preference for="Spiff\Personalize\Api\GuestCartCustomItemRepositoryInterface" type="Spiff\Personalize\Model\Quote\Item\GuestCartCustomerItemRepository" />
+    <preference for="Spiff\Personalize\Api\Data\CustomItemInformationInterface" type="Spiff\Personalize\Model\Quote\Item\CustomItemInformation" />
+    <preference for="Spiff\Personalize\Api\Data\CustomerSessionOutputDataInterface" type="Spiff\Personalize\Model\Data\CustomerSessionOutputData" />
+    <preference for="Spiff\Personalize\Api\CustomerRepositoryInterface" type="Spiff\Personalize\Model\CustomerRepository" />
+</config>

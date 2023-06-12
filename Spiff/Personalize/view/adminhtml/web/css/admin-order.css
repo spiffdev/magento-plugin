@@ -1,0 +1,21 @@
+.sales-order-view .edit-order-table thead tr.headings {
+    display: flex;
+    flex-wrap: wrap;
+}
+.sales-order-view .edit-order-table tr.headings th,
+.sales-order-view .edit-order-table tbody td{
+    width: 9%;
+}
+.sales-order-view .edit-order-table tbody tr.spiff-id td{
+    width: 100%;
+}
+.sales-order-view .edit-order-table tbody tr{
+    display: flex;
+    flex-wrap: wrap;
+}
+.sales-order-view th.col-custom_item_column.last {
+    order: -1;
+}
+.sales-order-view td.product-image {
+    order: -1;
+}

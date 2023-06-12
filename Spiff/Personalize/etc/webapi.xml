@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+
+    <route url="/V1/carts/mine/custom-items" method="POST">
+        <service class="Spiff\Personalize\Api\CartCustomItemRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+        <data>
+            <parameter name="cartItem.quote_id" force="true">%cart_id%</parameter>
+        </data>
+    </route>
+
+    <route url="/V1/carts/mine/update-custom-items" method="POST">
+        <service class="Spiff\Personalize\Api\CartCustomItemRepositoryInterface" method="updateCustomItems"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+        <data>
+            <parameter name="cartItem.quote_id" force="true">%cart_id%</parameter>
+        </data>
+    </route>
+
+    <route url="/V1/guest-carts/:cartId/custom-items" method="POST">
+        <service class="Spiff\Personalize\Api\GuestCartCustomItemRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/guest-carts/:cartId/update-custom-items" method="POST">
+        <service class="Spiff\Personalize\Api\GuestCartCustomItemRepositoryInterface" method="updateCustomItems"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/customer-sync/" method="POST">
+        <service class="Spiff\Personalize\Api\CustomerRepositoryInterface" method="syncSession"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+        <data>
+            <parameter name="customerId" force="true">%customer_id%</parameter>
+        </data>
+    </route>
+</routes>
