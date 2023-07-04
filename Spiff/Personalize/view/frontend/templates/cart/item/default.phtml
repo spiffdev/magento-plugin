@@ -25,8 +25,8 @@ $canApplyMsrp = $helper->isShowBeforeOrderConfirm($product) && $helper->isMinima
     <?php if($data['spiff_image']!==null):?>
         <td data-th="<?= $block->escapeHtml(__('Item')) ?>" class="col item" style="display: flex;">
                 <div class="ImagePreview" style="display: inline-block; padding-right: 20px;">
-                    <a href="<?= $block->escapeUrl($block->getProductUrl()) ?>" title="<?php echo $data['name'] ?>">
-                        <img src="<?= $data['spiff_image']?>" alt="<?php echo $data['name'] ?>" style="width: 239px;height: 165px;" loading="lazy"> 
+                    <a href="<?= $block->escapeUrl($block->getProductUrl()) ?>" title="<?= $block->escapeHtml($block->getProductName())?>">
+                        <img src="<?= $data['spiff_image']?>" alt="<?= $block->escapeHtml($block->getProductName())?>" style="width: 239px;height: 165px;" loading="lazy"> 
                     </a>
                 </div>  
             <?php else:?>

@@ -670,7 +670,6 @@ use Magento\Framework\HTTP\Client\Curl;
         $baseProduct = $this->productRepository->get($cart_item->getSku());
         if($cart_item->getSpiffTransactionId()!==null && $baseProduct->getRedirectProduct()===null ){
             $data = $this->spiff_get_data_transaction_api($cart_item->getSpiffTransactionId());
-            $data['name'] = $cart_item->getName();
             return $data;
         }else{
             return $product;

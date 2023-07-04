@@ -246,7 +246,7 @@
                 });
             })
         </script>
-      <?php else:?>
+      <?php elseif($_product->getEnableSpiff()=='1'):?>
         <script type="text/javascript" async src="https://assets.spiff.com.au/api.js"></script>
         <script>
         require(['axios', 'Magento_Customer/js/customer-data'], (axios, customerData) => {
