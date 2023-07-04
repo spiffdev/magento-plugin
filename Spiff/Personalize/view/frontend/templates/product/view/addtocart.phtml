@@ -4,13 +4,33 @@
  * See COPYING.txt for license details.
  */
 
-/** @var $block \Magento\Catalog\Block\Product\View */
+/** @var $block \Spiff\Personalize\Block\Product\View */
 ?>
-<?php $_product = $block->getProduct(); ?>
-<?php $buttonTitle = __('Add to Cart'); ?>
+<?php $_product = $block->getProduct();
+      $spiffProduct = $this->helper('Spiff\Personalize\Helper\ProductHelper'); 
+      $product = $spiffProduct->getSpiffProductRegistry();
+ ?>
+<?php $buttonTitle = __('Add to Cart');
+     if($product!=null){
+        $spiffoptionId =  $block->getOptionData($product);
+     }
+     else{
+        $spiffoptionId =  $block->getOptionData($_product);
+     }
+ ?>
 <?php if ($_product->isSaleable()):?>
 <?php $helper = $this->helper('Spiff\Personalize\Helper\Data'); ?>
 <?php $currencyCode = $helper->getCurrentCurrencyCode(); ?>
+<style>
+    button#spiff-button {
+        margin-right: 1%;
+        width: 49%;
+        padding: 14px 17px;
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        line-height: 2.2rem;
+}
+</style>
 <div class="box-tocart">
     <div class="fieldset">
         <?php if ($block->shouldRenderQuantity()):?>
@@ -29,13 +49,29 @@
             </div>
         </div>
         <?php endif; ?>
-        <?php if ($_product->getEnableSpiff() == '1'): ?>
-            <div class="actions add-to-cart">
-                <button type="button" class="action primary tocart" id="spiff-button">
-                    <span><?= /* @escapeNotVerified */ __('PERSONALIZE NOW') ?></span>
-                </button>
-            </div>
-        <?php else: ?>
+        
+        <?php if ($product!=null && $product->getEnableSpiff() == '1' && $product->getRedirectProduct()==null): ?>
+                <div class="actions">
+                    <button type="submit"
+                            title="<?= $block->escapeHtmlAttr($buttonTitle) ?>"
+                            class="action primary tocart"
+                            id="product-addtocart-button" disabled>
+                        <span><?= $block->escapeHtml($buttonTitle) ?></span>
+                    </button>
+                    <?= $block->getChildHtml('', true) ?>
+                </div>
+                <div class="actions add-to-cart">
+                   <button type="button" class="action primary Spiff" id="spiff-button"">
+                        <span>PERSONALIZE NOW</span>
+                   </button>
+                </div>
+         <?php elseif($_product->getEnableSpiff()=='1'):?>
+                <div class="actions add-to-cart">
+                    <button type="button" class="action primary tocart" id="spiff-button">
+                        <span><?= /* @escapeNotVerified */ __('PERSONALIZE NOW') ?></span>
+                    </button>
+                </div>
+        <?php else:?>
             <div class="actions">
                 <button type="submit"
                         title="<?= $block->escapeHtmlAttr($buttonTitle) ?>"
@@ -45,8 +81,8 @@
                 </button>
                 <?= $block->getChildHtml('', true) ?>
             </div>
-        <?php endif ?>
-    </div>
+         <?php endif ?>   
+     </div>
 </div>
 <?php endif; ?>
 <script type="text/x-magento-init">
@@ -57,16 +93,174 @@
     }
 </script>
 
-<?php if ($_product->getEnableSpiff() == '1'): ?>
-    <script type="text/javascript" async src="https://assets.spiff.com.au/api.js"></script>
-    <script>
+<?php if ($product!=null && $product->getEnableSpiff() == '1'  && $_product->getRedirectProduct()!==null ): ?>
+        <script type="text/javascript" async src="https://assets.spiff.com.au/api.js"></script>
+        <script>
+            require(["jquery",'axios', 'Magento_Customer/js/customer-data'], ($,axios, customerData) => {
+                const spiffButton = document.querySelector('#spiff-button');
+                    
+                    const sku = `<?= $product->getSku() ?>`;
+                    var productsku = `<?=$_product->getSku()?>`
+                    const spiffoptionId = `<?=$spiffoptionId?>`;
+                    spiffButton.addEventListener('click', function() {
+                    const product = new window.Spiff.IntegrationProduct('<?= $product->getSpiffIntegrationProductId() ?>');
+                    let Qty;
+                    let qty = document.getElementById("qty");
+                    if(qty!==null){
+                        Qty = qty.value;
+                    }
+                    product.on('ready', () => {
+                        const hostedExperienceOptions = {
+                            presentmentCurrency: '<?= $currencyCode ?>',
+                            product: product,
+                        };
+                
+                        const hostedExperience = new window.Spiff.HostedExperience(hostedExperienceOptions);
+                        hostedExperience.on("complete", async (result) => {
+                            // Handle the result of the workflow experience..
+                            // request to get quote id
+                            try {
+                                const { data: syncData } = await axios.post('/rest/V1/customer-sync')
+                            
+                                const customerToken = syncData.customer_token;
+                                const cartId = syncData.cart_id;
+                                const sections = ['cart'];
+                                customerData.invalidate(sections);
+                                customerData.reload(sections, true);
+                                
+                                if (customerToken) {
+                                        const options = {
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'Authorization': `Bearer ${customerToken}`
+                                        }
+                                    }
+                                    const { data: quoteId } = await axios.post('/rest/V1/carts/mine', {}, options)
+                                    const payloadspiff = {
+                                        cartItem: {
+                                            sku,
+                                            quote_id: quoteId,
+                                            qty: Qty,
+                                            product_option: {
+                                                extension_attributes:{
+                                                    custom_options:
+                                                    [
+                                                        {
+                                                            option_id: spiffoptionId,
+                                                            option_value: result.transactionId,
+                                                            extension_attributes: 
+                                                            {
+                                                                file_info: 
+                                                                {
+                                                                    base64_encoded_data: "",
+                                                                    type: "",
+                                                                    name: ""
+                                                                }
+                                                            }
+                                                        }
+                                                        
+                                                    ],
+                                                 }
+                                                
+                                            }
+                                        },
+                                        customItemInformation: {
+                                            'custom_price': (result.baseCost + result.optionsCost) / 100,
+                                            'transaction_id': result.transactionId
+                                        },
+                            
+                                    }      
+                                    const payloadproduct = {
+                                            cartItem: {
+                                                sku:productsku,
+                                                quote_id: cartId,
+                                                qty: Qty,
+                                            },
+                                            customItemInformation: {
+                                                custom_price: (result.baseCost + result.optionsCost) / 100,
+                                                transaction_id: result.transactionId
+                                            }
+                                        };                         
+                                    await axios.post('/rest/V1/carts/mine/custom-items', payloadspiff, options)
+                                    await axios.post('/rest/V1/carts/mine/custom-items', payloadproduct, options)
+                                    await axios.post('/rest/V1/carts/mine/update-custom-items', payloadspiff, options)
+                                    await axios.post('/rest/V1/carts/mine/update-custom-items', payloadproduct, options)  
+                                } else {
+                                        const payloadspiff = {
+                                            cartItem: {
+                                                sku,
+                                                quote_id: cartId,
+                                                qty: Qty,
+                                                product_option: {
+                                                    extension_attributes:{
+                                                        custom_options:
+                                                        [
+                                                            {
+                                                                option_id: spiffoptionId,
+                                                                option_value: result.transactionId,
+                                                                extension_attributes: {
+                                                                file_info: {
+                                                                    base64_encoded_data: "",
+                                                                    type: "",
+                                                                    name: ""
+                                                                    }
+                                                                }
+                                                            }
+                                                        
+                                                        ],
+                                                    }
+                                                
+                                                }
+                                            },
+                                            customItemInformation: {
+                                                custom_price: (result.baseCost + result.optionsCost) / 100,
+                                                transaction_id: result.transactionId
+                                            }
+                                        };
+                                        const payloadproduct = {
+                                            cartItem: {
+                                                sku:productsku,
+                                                quote_id: cartId,
+                                                qty: Qty,
+                                            },
+                                            customItemInformation: {
+                                                custom_price: (result.baseCost + result.optionsCost) / 100,
+                                                transaction_id: result.transactionId
+                                            }
+                                        };
+                                        await axios.post(`/rest/V1/guest-carts/${cartId}/custom-items`, payloadspiff)
+                                        await axios.post(`/rest/V1/guest-carts/${cartId}/custom-items`, payloadproduct)
+                                        await axios.post(`/rest/V1/guest-carts/${cartId}/update-custom-items`, payloadspiff)
+                                        await axios.post(`/rest/V1/guest-carts/${cartId}/update-custom-items`, payloadproduct)
+ 
+                                        
+                                    }        
+                                window.location.href = '/checkout/cart'
+                            } catch(e) {
+                                console.log(e)
+                            }
+                        });
+                        hostedExperience.execute();
+                    });
+                    product.confirmActive();
+                });
+            })
+        </script>
+      <?php else:?>
+        <script type="text/javascript" async src="https://assets.spiff.com.au/api.js"></script>
+        <script>
         require(['axios', 'Magento_Customer/js/customer-data'], (axios, customerData) => {
             const spiffButton = document.querySelector('#spiff-button')
             const sku = `<?= $_product->getSku() ?>`
+            const spiffoptionId = `<?=$spiffoptionId?>`;
             spiffButton.addEventListener('click', function() {
                 const product = new window.Spiff.IntegrationProduct('<?= $_product->getSpiffIntegrationProductId() ?>');
+ 		        let Qty;
+                let qty = document.getElementById("qty");
+                if(qty!==null){
+                    Qty = qty.value;
+                }
                 product.on('ready', () => {
-                   
                     const hostedExperienceOptions = {
                         presentmentCurrency: '<?= $currencyCode ?>',
                         product: product,
@@ -76,7 +270,9 @@
                     hostedExperience.on("complete", async (result) => {
                         // Handle the result of the workflow experience..
                         // request to get quote id
+						console.log("request to get quote id");
                         try {
+							console.log("Check customer");
                             const { data: syncData } = await axios.post('/rest/V1/customer-sync')
 
                             const customerToken = syncData.customer_token;
@@ -85,7 +281,7 @@
                             const sections = ['cart'];
                             customerData.invalidate(sections);
                             customerData.reload(sections, true);
-
+							
                             if (customerToken) {
                                 const options = {
                                     headers: {
@@ -94,34 +290,75 @@
                                     }
                                 }
                                 const { data: quoteId } = await axios.post('/rest/V1/carts/mine', {}, options)
-                                const payload = {
+                                const payloadspiff = {
                                     cartItem: {
                                         sku,
                                         quote_id: quoteId,
-                                        qty: 1
+                                        qty: Qty,
+					                    product_option: {
+                                                extension_attributes:{
+                                                    custom_options:
+                                                    [
+                                                        {
+                                                            option_id: spiffoptionId,
+                                                            option_value: result.transactionId,
+                                                            extension_attributes: {
+                                                            file_info: {
+                                                                base64_encoded_data: "",
+                                                                type: "",
+                                                                name: ""
+                                                                }
+                                                            }
+                                                        }
+                                                       
+                                                    ],
+                                                }
+                                              
+                                           }
                                     },
                                     customItemInformation: {
                                         'custom_price': (result.baseCost + result.optionsCost) / 100,
                                         'transaction_id': result.transactionId
                                     }
                                 }
-                                await axios.post('/rest/V1/carts/mine/custom-items', payload, options)
-                                await axios.post('/rest/V1/carts/mine/update-custom-items', payload, options)
+								console.log("Cart mine");
+                                await axios.post('/rest/V1/carts/mine/custom-items', payloadspiff, options)
+                                await axios.post('/rest/V1/carts/mine/update-custom-items', payloadspiff, options)
                             } else {
-                                const payload = {
-                                    cartItem: {
-                                        sku,
-                                        quote_id: cartId,
-                                        qty: 1
-                                    },
-                                    customItemInformation: {
-                                        'custom_price': (result.baseCost + result.optionsCost) / 100,
-                                        'transaction_id': result.transactionId
-                                    }
+                                    const payloadspiff = {
+                                        cartItem: {
+                                            sku,
+                                            quote_id: cartId,
+                                            qty: Qty,
+                                            product_option: {
+                                                extension_attributes:{
+                                                    custom_options:
+                                                    [
+                                                        {
+                                                            option_id: spiffoptionId,
+                                                            option_value: result.transactionId,
+                                                            extension_attributes: {
+                                                            file_info: {
+                                                                base64_encoded_data: "",
+                                                                type: "",
+                                                                name: ""
+                                                                }
+                                                            }
+                                                        }
+                                                       
+                                                    ],
+                                                }
+                                              
+                                            }
+                                        },
+                                        customItemInformation: {
+                                            custom_price: (result.baseCost + result.optionsCost) / 100,
+                                            transaction_id: result.transactionId
+                                        }
+                                    };
+                                    await axios.post(`/rest/V1/guest-carts/${cartId}/custom-items`, payloadspiff)
+                                    await axios.post(`/rest/V1/guest-carts/${cartId}/update-custom-items`, payloadspiff)
                                 }
-                                await axios.post(`/rest/V1/guest-carts/${cartId}/custom-items`, payload)
-                                await axios.post(`/rest/V1/guest-carts/${cartId}/update-custom-items`, payload)
-                            }
                              window.location.href = '/checkout/cart'
                         } catch(e) {
                             console.log(e)

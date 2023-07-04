@@ -1,10 +1,22 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
-        <referenceBlock name="product.info.addtocart">
-            <action method="setTemplate">
-                <argument name="template" xsi:type="string">Spiff_Personalize::product/view/addtocart.phtml</argument>
-            </action>
-        </referenceBlock>
+         <referenceContainer name="product.info.main">
+            <referenceBlock name="product.info.addtocart">
+                <action method="setTemplate">
+                    <argument name="template" xsi:type="string">Spiff_Personalize::product/view/addtocart.phtml</argument>
+                </action>
+            </referenceBlock>
+            <referenceBlock name="product.info.addtocart.additional">
+                <action method="setTemplate">
+                    <argument name="template" xsi:type="string">Spiff_Personalize::product/view/addtocart.phtml</argument>
+                </action>
+            </referenceBlock>
+            <referenceBlock name="product.info.options.text">
+                <action method="setTemplate">
+                    <argument name="template" xsi:type="string">Spiff_Personalize::product/view/options/type/text.phtml</argument>
+                </action>
+            </referenceBlock>
+        </referenceContainer>   
     </body>
 </page>

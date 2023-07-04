@@ -6,4 +6,7 @@
     <preference for="Spiff\Personalize\Api\Data\CustomItemInformationInterface" type="Spiff\Personalize\Model\Quote\Item\CustomItemInformation" />
     <preference for="Spiff\Personalize\Api\Data\CustomerSessionOutputDataInterface" type="Spiff\Personalize\Model\Data\CustomerSessionOutputData" />
     <preference for="Spiff\Personalize\Api\CustomerRepositoryInterface" type="Spiff\Personalize\Model\CustomerRepository" />
+    <preference for="Magento\Checkout\Block\Cart\Item\Renderer" type="Spiff\Personalize\Block\Cart\Item\Renderer" />
+    <preference for="Magento\Catalog\Block\Product\View\Options\Type\Text" type="Spiff\Personalize\Block\Product\View\Options\Type\Text" />
+    <preference for="Magento\Catalog\Block\Product\View" type="Spiff\Personalize\Block\Product\View"/>
 </config>

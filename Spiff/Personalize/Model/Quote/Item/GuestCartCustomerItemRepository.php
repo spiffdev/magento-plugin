@@ -133,7 +133,7 @@ class GuestCartCustomerItemRepository implements GuestCartCustomItemRepositoryIn
         $quote = $this->quoteRepository->getActive($quoteIdMask->getQuoteId());
         $items = $quote->getItems();
         foreach ($items as $item) {
-            if ($item->getSku() === $cartItem->getSku()) {
+            if ($item->getSku() === $cartItem->getSku() && $item->getSpiffTransactionId()===null) {
                 $product = $this->productRepository->get($item->getSku());
                 
                 if ($useSellPoint) {
