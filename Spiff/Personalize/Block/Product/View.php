@@ -6,8 +6,6 @@
 namespace Spiff\Personalize\Block\Product;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Option;
 /**
  * Product View block
  * @api
@@ -16,8 +14,31 @@ use Magento\Catalog\Model\Product\Option;
  */
 class View extends \Magento\Catalog\Block\Product\View 
 {
-    public $Product;
-    public $Option;
+    /**
+     * @var  \Magento\Catalog\Model\Product
+     */
+    protected $Product;
+    /**
+     * @var  \Magento\Catalog\Model\Product\Option
+     */
+    protected $Option;
+    /**
+     * @param Context $context
+     * @param \Magento\Framework\Url\EncoderInterface $urlEncoder
+     * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
+     * @param \Magento\Framework\Stdlib\StringUtils $string
+     * @param \Magento\Catalog\Helper\Product $productHelper
+     * @param \Magento\Catalog\Model\ProductTypes\ConfigInterface $productTypeConfig
+     * @param \Magento\Framework\Locale\FormatInterface $localeFormat
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param ProductRepositoryInterface|\Magento\Framework\Pricing\PriceCurrencyInterface $productRepository
+     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+     * @param \Magento\Catalog\Model\Product $Product
+     * @param \Magento\Catalog\Model\Product\Option $Option
+     * @param array $data
+     * @codingStandardsIgnoreStart
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     */
     public function __construct(
             \Magento\Catalog\Block\Product\Context $context,
             \Magento\Framework\Url\EncoderInterface $urlEncoder,
@@ -36,9 +57,6 @@ class View extends \Magento\Catalog\Block\Product\View
         $this->Product = $Product; 
         $this->Option = $Option;
         parent::__construct($context, $urlEncoder, $jsonEncoder, $string, $productHelper, $productTypeConfig, $localeFormat, $customerSession, $productRepository, $priceCurrency,$data);
-
-    
-
     }
     public function getOptionData($_product)
     {
