@@ -16,7 +16,11 @@
                     <comment>Configures if the module is enabled</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="spiff_access_key" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="application_key" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Application Key</label>
+                    <comment>Enter your Application key here.</comment>
+                </field>
+				<field id="spiff_access_key" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Access Key</label>
                     <comment>Enter your integration's access key here.</comment>
                 </field>
