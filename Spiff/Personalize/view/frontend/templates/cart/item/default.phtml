@@ -10,18 +10,11 @@
 /** @var $block \Spiff\Personalize\Block\Cart\Item\Renderer */
 
 $_item = $block->getItem();
+
 $product = $_item->getProduct();
-
-$_itemType = $product->getTypeId();
-
-if ($_itemType == 'configurable') {
-	//Get Configurable option selected
-	$selectedOption = $product->getTypeInstance(true)->getOrderOptions($product);
-}
 
 $data= $block->spiff_return_data_in_cart($product,$_item);
 $metadata = $data['metadata'];
-
 $isVisibleProduct = $product->isVisibleInSiteVisibility();
 /** @var \Magento\Msrp\Helper\Data $helper */
 $helper = $this->helper(Magento\Msrp\Helper\Data::class);
@@ -32,8 +25,8 @@ $canApplyMsrp = $helper->isShowBeforeOrderConfirm($product) && $helper->isMinima
     <?php if($data['spiff_image']!==null):?>
         <td data-th="<?= $block->escapeHtml(__('Item')) ?>" class="col item" style="display: flex;">
                 <div class="ImagePreview" style="display: inline-block; padding-right: 20px;">
-                    <a href="<?= $block->escapeUrl($block->getProductUrl()) ?>" title="<?= $block->escapeHtml($block->getProductName())?>">
-                        <img src="<?= $data['spiff_image']?>" alt="<?= $block->escapeHtml($block->getProductName())?>" style="width: 239px;height: 165px;" loading="lazy"> 
+                    <a href="<?= $block->escapeUrl($block->getProductUrl()) ?>" title="<?php echo $data['name'] ?>">
+                        <img src="<?= $data['spiff_image']?>" alt="<?php echo $data['name'] ?>" style="width: 239px;height: 165px;" loading="lazy"> 
                     </a>
                 </div>  
             <?php else:?>
@@ -83,9 +76,9 @@ $canApplyMsrp = $helper->isShowBeforeOrderConfirm($product) && $helper->isMinima
                        
                     <?php endif; ?>
                 </strong>
-                <?php if (!empty($selectedOption)): ?>
+                <?php if ($_options = $block->getOptionList()): ?>
                     <dl class="item-options">
-                        <?php foreach ($selectedOption['attributes_info'] as $_option): ?>
+                        <?php foreach ($_options as $_option): ?>
                             <?php $_formatedOptionValue = $block->getFormatedOptionValue($_option) ?>
                             <dt><?= $block->escapeHtml($_option['label']) ?></dt>
                             <dd>
