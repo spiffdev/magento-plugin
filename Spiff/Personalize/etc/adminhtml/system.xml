@@ -16,17 +16,14 @@
                     <comment>Configures if the module is enabled</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+				<field id="region" translate="label comment" type="select" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Region</label>
+                    <source_model>Spiff\Personalize\Model\Config\Source\Region</source_model>
+                    <comment>Please select a region.</comment>
+                </field>
                 <field id="application_key" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Application Key</label>
                     <comment>Enter your Application key here.</comment>
-                </field>
-				<field id="spiff_access_key" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Access Key</label>
-                    <comment>Enter your integration's access key here.</comment>
-                </field>
-                <field id="spiff_secret" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Secret</label>
-                    <comment>Enter your integration's secret here.</comment>
                 </field>
             </group>
         </section>

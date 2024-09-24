@@ -1,15 +1,15 @@
 <body>
       <referenceBlock name="checkout.cart.item.renderers.override">
         <block class="Magento\Checkout\Block\Cart\Item\Renderer" as="default" template="Spiff_Personalize::cart/item/default.phtml">
-            <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions" as="actions">
+            <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions" name="checkout.cart.item.renderers.default.actions" as="actions">
                 <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Edit" name="checkout.cart.item.renderers.default.actions.edit" template="Magento_Checkout::cart/item/renderer/actions/edit.phtml"/>
                 <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove" name="checkout.cart.item.renderers.default.actions.remove" template="Magento_Checkout::cart/item/renderer/actions/remove.phtml"/>
             </block>
         </block>
         <block class="Magento\Checkout\Block\Cart\Item\Renderer" as="simple" template="Spiff_Personalize::cart/item/default.phtml">
-            <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions" as="actions">
-                <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Edit" name="checkout.cart.item.renderers.default.actions.edit" template="Magento_Checkout::cart/item/renderer/actions/edit.phtml"/>
-                <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove" name="checkout.cart.item.renderers.default.actions.remove" template="Magento_Checkout::cart/item/renderer/actions/remove.phtml"/>
+            <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions" name="checkout.cart.item.renderers.simple.actions" as="actions">
+                <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Edit" name="checkout.cart.item.renderers.simple.actions.edit" template="Magento_Checkout::cart/item/renderer/actions/edit.phtml"/>
+                <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove" name="checkout.cart.item.renderers.simple.actions.remove" template="Magento_Checkout::cart/item/renderer/actions/remove.phtml"/>
             </block>
         </block>
     </referenceBlock>

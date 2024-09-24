@@ -12,9 +12,10 @@ use Magento\Directory\Model\CountryFactory;
 
 class SpiffCheckoutObserver implements ObserverInterface
 {
-    const SPIFF_ACCESS_KEY_PATH = 'spiff_access_key';
-    const SPIFF_SECRET_PATH = 'spiff_secret';
-    const SPIFF_API_BASE = 'https://api.spiff.com.au';
+    const SPIFF_REGION_PATH = 'region';
+    const SPIFF_APPLICATION_KEY_PATH = 'application_key';
+    const SPIFF_API_AU = 'https://api.au.spiffcommerce.com';
+    const SPIFF_API_US = 'https://api.us.spiffcommerce.com';
     const SPIFF_API_ORDERS_PATH = '/api/v2/orders';
 
     /**
@@ -50,13 +51,18 @@ class SpiffCheckoutObserver implements ObserverInterface
 
     public function execute(Observer $observer)
     {
+		
         $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/custom.log');
         $logger = new \Zend_Log();
         $logger->addWriter($writer);
         try {
             $order = $observer->getEvent()->getOrder();
             $quote = $observer->getEvent()->getQuote();
-    
+			
+			if (empty($order) || empty($quote)){
+				return;
+			}
+
             $quoteItems = $quote->getItems();
             $orderItems = $order->getItems();
             $items = [];
@@ -147,30 +153,8 @@ class SpiffCheckoutObserver implements ObserverInterface
             $logger->info("error: " . $e->getMessage());
         }
     }
-
-    function spiff_hex_to_base64($hex)
-    {
-        $return = "";
-        foreach (str_split($hex, 2) as $pair) {
-            $return .= chr(hexdec($pair));
-        }
-        return base64_encode($return);
-    }
     
-    function spiff_auth_header($access_key, $secret_key, $method, $body, $content_type, $date_string, $path)
-    {
-        $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/custom.log');
-        $logger = new \Zend_Log();
-        $logger->addWriter($writer);
-		$hashed = hash("sha512", $body);
-        $string_to_sign = $method . "\n" . $hashed . "\n" . $content_type . "\n" . $date_string . "\n" . $path;
-        $signature = $this->spiff_hex_to_base64(hash_hmac("sha1", $string_to_sign, $secret_key));
-        $logger->info('signature: ' . $signature);
-
-        return 'SOA '  . $access_key . ':' . $signature;
-    }
-    
-    function spiff_request_headers($access_key, $secret_key, $body, $path)
+    function spiff_request_headers($application_key)
     {
         $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/custom.log');
         $logger = new \Zend_Log();
@@ -183,9 +167,8 @@ class SpiffCheckoutObserver implements ObserverInterface
         $logger->info('method: ' . 'POST');
         $logger->info('content_type: ' . $content_type);
         $logger->info('date: ' . $date_string);
-        $logger->info('path: ' . $path);
         return [
-            'Authorization' => $this->spiff_auth_header($access_key, $secret_key, 'POST', $body, $content_type, $date_string, $path),
+            'X-Application-Key' => $application_key,
             'Content-Type' => $content_type,
             'Date' => $date_string,
         ];
@@ -197,20 +180,25 @@ class SpiffCheckoutObserver implements ObserverInterface
         $logger = new \Zend_Log();
         $logger->addWriter($writer);
         try {
-            $access_key = $this->spiffHelperData->getGeneralConfig(self::SPIFF_ACCESS_KEY_PATH);
-            $secret_key = $this->spiffHelperData->getGeneralConfig(self::SPIFF_SECRET_PATH);
-            $logger->info("access_key: " . $access_key);
-            $logger->info("secret_key: " . $secret_key);
+            $api_region = $this->spiffHelperData->getGeneralConfig(self::SPIFF_REGION_PATH);
+            $application_key = $this->spiffHelperData->getGeneralConfig(self::SPIFF_APPLICATION_KEY_PATH);
             $logger->info("body: " . json_encode($body));
-            $headers = $this->spiff_request_headers($access_key, $secret_key, json_encode($body), self::SPIFF_API_ORDERS_PATH);
+            $headers = $this->spiff_request_headers($application_key);
             $logger->info("headers: " . json_encode($headers));
             
             $this->curl->setHeaders($headers);
             $this->curl->setOption(CURLOPT_RETURNTRANSFER, true);
-            $this->curl->post(self::SPIFF_API_BASE . self::SPIFF_API_ORDERS_PATH, json_encode($body));
+
+            switch ($api_region) {
+                case 'US':
+                    $this->curl->post(self::SPIFF_API_US . self::SPIFF_API_ORDERS_PATH, json_encode($body));
+                    break;
+                default:
+                $this->curl->post(self::SPIFF_API_AU . self::SPIFF_API_ORDERS_PATH, json_encode($body));
+                    break;
+            }
     
             $result = $this->curl->getBody();
-            $header = $this->curl->getHeaders();
     
             $logger->info("response: " . json_encode($result));
         } catch (\Exception $e) {

@@ -304,6 +304,16 @@ use Magento\Framework\HTTP\Client\Curl;
         return $this->getProductOptions();
     }
 
+	public function getSelectedOptionsOfQuoteItem(\Magento\Catalog\Model\Product\Configuration\Item\ItemInterface $item)
+    {
+		$writer = new \Zend_Log_Writer_Stream(BP . '/var/log/getCustomOptions.log');
+		$logger = new \Zend_Log();
+		$logger->addWriter($writer);
+		$logger->info("getSelectedOptionsOfQuoteItem");
+		$logger->info(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,15));
+        return $this->_productConfig->getCustomOptions($item);
+    }
+
     /**
      * Get quote item qty
      *
@@ -663,7 +673,11 @@ use Magento\Framework\HTTP\Client\Curl;
         return $data;
     }
     
-    public function spiff_return_data_in_cart($product, $cart_item) {
+    public function spiff_return_data_in_cart($product, $cart_item) {	
+		
+		if ($product->getTypeId() == 'bundle' ) {
+			return $product;
+		}
         if (!array_key_exists('spiff_transaction_id', $cart_item->getData())) {
           return $product;
         }

@@ -10,11 +10,18 @@
 /** @var $block \Spiff\Personalize\Block\Cart\Item\Renderer */
 
 $_item = $block->getItem();
-
 $product = $_item->getProduct();
+
+$_itemType = $product->getTypeId();
+
+if ($_itemType == 'configurable') {
+	//Get Configurable option selected
+	$selectedOption = $product->getTypeInstance(true)->getOrderOptions($product);
+}
 
 $data= $block->spiff_return_data_in_cart($product,$_item);
 $metadata = $data['metadata'];
+
 $isVisibleProduct = $product->isVisibleInSiteVisibility();
 /** @var \Magento\Msrp\Helper\Data $helper */
 $helper = $this->helper(Magento\Msrp\Helper\Data::class);
@@ -76,9 +83,9 @@ $canApplyMsrp = $helper->isShowBeforeOrderConfirm($product) && $helper->isMinima
                        
                     <?php endif; ?>
                 </strong>
-                <?php if ($_options = $block->getOptionList()): ?>
+                <?php if (!empty($selectedOption)): ?>
                     <dl class="item-options">
-                        <?php foreach ($_options as $_option): ?>
+                        <?php foreach ($selectedOption['attributes_info'] as $_option): ?>
                             <?php $_formatedOptionValue = $block->getFormatedOptionValue($_option) ?>
                             <dt><?= $block->escapeHtml($_option['label']) ?></dt>
                             <dd>
