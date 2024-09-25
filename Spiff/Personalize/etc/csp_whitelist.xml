@@ -4,26 +4,26 @@
         <policy id="script-src">
             <values>
                 <value id="spiff-design" type="host">*.spiff.com.au</value>
-                <value id="data" type="host">'self' data:</value>
+                <value id="spiff-api" type="host">*.spiffcommerce.com</value>
             </values>
         </policy>
         <policy id="img-src">
             <values>
                 <value id="spiff-design" type="host">*.spiff.com.au</value>
-                <value id="data" type="host">'self' data:</value>
+                <value id="spiff-api" type="host">*.spiffcommerce.com</value>
             </values>
         </policy>
 		<policy id="connect-src">
         	<values>
-				<value id="spiff-design" type="host">*.spiff.com.au</value>
-                <value id="data" type="host">'self' data:</value>
-        	</values>
+                <value id="spiff-design" type="host">*.spiff.com.au</value>
+                <value id="spiff-api" type="host">*.spiffcommerce.com</value>
+            </values>
     	</policy>
 		<policy id="frame-src">
         	<values>
-				<value id="spiff-design" type="host">*.spiff.com.au</value>
-                <value id="data" type="host">'self' data:</value>
-        	</values>
+                <value id="spiff-design" type="host">*.spiff.com.au</value>
+                <value id="spiff-api" type="host">*.spiffcommerce.com</value>
+            </values>
     	</policy>
     </policies>
 </csp_whitelist>
