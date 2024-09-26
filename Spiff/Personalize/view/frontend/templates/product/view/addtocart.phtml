@@ -100,7 +100,7 @@
 </script>
 
 <?php if ($product!=null && $product->getEnableSpiff() == '1'  && $_product->getRedirectProduct()!==null ): ?>
-        <script type="text/javascript" async src="https://assets.spiff.com.au/api.js"></script>
+        <script type="text/javascript" async src="https://assets.us.spiffcommerce.com/api.js"></script>
         <script>
             require(["jquery",'axios', 'Magento_Customer/js/customer-data'], ($,axios, customerData) => {
 					window.Spiff.setRegion("<?= strtolower($region_api)?>");
@@ -254,7 +254,7 @@
             })
         </script>
       <?php elseif($_product->getEnableSpiff()=='1'):?>
-        <script type="text/javascript" src="https://assets.spiff.com.au/api.js"></script>
+        <script type="text/javascript" async src="https://assets.us.spiffcommerce.com/api.js"></script>
         <script>
         require(['axios', 'Magento_Customer/js/customer-data'], (axios, customerData) => {
 			window.Spiff.setRegion("<?= strtolower($region_api)?>");
