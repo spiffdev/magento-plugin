@@ -19,9 +19,9 @@ Learn more about Spiff Commerce here.
 
 ### How do I get set up? ###
 
-* Please follow the instructions here to install. [Magento Installation Guide](https://commercemarketplace.adobe.com/media/catalog/product/spiff-commerce-personalize-1-2-0-ce/user_guides.pdf)
+* Please follow the instructions here to install. [Magento Installation Guide](https://commercemarketplace.adobe.com/media/catalog/product/spiff-commerce-personalize-1-2-1-ece/user_guides.pdf?1758074148)
 
 
-### Contribution guidelines ###
+### Contribution guidelines 
 
 * Feel free to open issues or make pull requests against the repository. We'll review these and get back to you as quickly as we can.
