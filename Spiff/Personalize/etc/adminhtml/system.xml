@@ -9,19 +9,19 @@
             <label>Spiff API Settings</label>
             <tab>spiff</tab>
             <resource>Spiff_Personalize::configuration</resource>
-            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Spiff API Settings</label>
                 <field id="enabled" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Module</label>
                     <comment>Configures if the module is enabled</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-				<field id="region" translate="label comment" type="select" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0">
+				<field id="region" translate="label comment" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Region</label>
                     <source_model>Spiff\Personalize\Model\Config\Source\Region</source_model>
                     <comment>Please select a region.</comment>
                 </field>
-                <field id="application_key" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="application_key" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Application Key</label>
                     <comment>Enter your Application key here.</comment>
                 </field>
