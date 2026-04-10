@@ -185,7 +185,11 @@ class SpiffCheckoutObserver implements ObserverInterface
             $application_key = $this->spiffHelperData->getGeneralConfig(self::SPIFF_APPLICATION_KEY_PATH, $storeId);
             $logger->info("body: " . json_encode($body));
             $headers = $this->spiff_request_headers($application_key);
-            $logger->info("headers: " . json_encode($headers));
+            $sanitizedHeaders = $headers;
+            if (isset($sanitizedHeaders['X-Application-Key'])) {
+                $sanitizedHeaders['X-Application-Key'] = '[REDACTED]';
+            }
+            $logger->info("headers: " . json_encode($sanitizedHeaders));
             
             $this->curl->setHeaders($headers);
             $this->curl->setOption(CURLOPT_RETURNTRANSFER, true);
