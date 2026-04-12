@@ -95,6 +95,7 @@ class SpiffCheckoutObserver implements ObserverInterface
             }
             if (count($spiffOrderItems) > 0) {
                 // Request data to spiff
+                $storeId = $order->getStoreId();
                 $shippingAddress = $order->getShippingAddress();
                 $billingAddress = $order->getBillingAddress();
                 $shippingCountry = $this->countryFactory->create()->loadByCode($shippingAddress->getCountryId());
@@ -147,7 +148,7 @@ class SpiffCheckoutObserver implements ObserverInterface
                     'orderItems'    => $spiffOrderItems,
                     'externalData'  => $externalData
                 ];
-                $this->sendRequestToSpiff($body);
+                $this->sendRequestToSpiff($body, $storeId);
             }
         } catch (\Exception $e) {
             $logger->info("error: " . $e->getMessage());
@@ -174,17 +175,21 @@ class SpiffCheckoutObserver implements ObserverInterface
         ];
     }
 
-    function sendRequestToSpiff($body)
+    function sendRequestToSpiff($body, $storeId = null)
     {
         $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/custom.log');
         $logger = new \Zend_Log();
         $logger->addWriter($writer);
         try {
-            $api_region = $this->spiffHelperData->getGeneralConfig(self::SPIFF_REGION_PATH);
-            $application_key = $this->spiffHelperData->getGeneralConfig(self::SPIFF_APPLICATION_KEY_PATH);
+            $api_region = $this->spiffHelperData->getGeneralConfig(self::SPIFF_REGION_PATH, $storeId);
+            $application_key = $this->spiffHelperData->getGeneralConfig(self::SPIFF_APPLICATION_KEY_PATH, $storeId);
             $logger->info("body: " . json_encode($body));
             $headers = $this->spiff_request_headers($application_key);
-            $logger->info("headers: " . json_encode($headers));
+            $sanitizedHeaders = $headers;
+            if (isset($sanitizedHeaders['X-Application-Key'])) {
+                $sanitizedHeaders['X-Application-Key'] = '[REDACTED]';
+            }
+            $logger->info("headers: " . json_encode($sanitizedHeaders));
             
             $this->curl->setHeaders($headers);
             $this->curl->setOption(CURLOPT_RETURNTRANSFER, true);
